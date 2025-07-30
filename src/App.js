@@ -1,55 +1,81 @@
-import React, { useState } from 'react';
-import PartyList from './components/PartyList';
-import Header from './components/Header';
-import PartyStats from './components/PartyStats';
-import BulkUploadBanner from './components/BulkUploadBanner';
-import CreatePartyModal from './components/CreatePartyModal';
+import React, { useState } from "react";
+import Header from "./components/Header";
+import PartyStats from "./components/PartyStats";
+import PartyList from "./components/PartyList"; // Or PartyTable if that's your new table component
+import CreatePartyModal from "./components/CreatePartyModal";
+import UploadExcelModal from "./components/UploadExcelModal";
+import BulkUploadBanner from "./components/BulkUploadBanner";
 
-function App() {
+export default function App() {
   const [parties, setParties] = useState([
-    { name: 'Cash Sale', category: '-', mobile: '6380590369', type: 'Customer', balance: 0, balanceType: 'To Collect' },
+    {
+      name: "Cash Sale",
+      category: "-",
+      mobile: "6380590369",
+      type: "Customer",
+      balance: 0,
+      balanceType: "To Collect",
+    },
   ]);
 
-  const [showModal, setShowModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
   const addParty = (newParty) => {
     setParties([...parties, newParty]);
-    setShowModal(false);
+    setShowCreateModal(false);
+  };
+
+  const handleExcelUpload = (uploaded) => {
+    setParties([...parties, ...uploaded]);
+    setShowUploadModal(false);
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <Header />
+
       <div className="bg-white p-6 rounded-lg shadow">
         <PartyStats parties={parties} />
 
-        {/* Create Party Button */}
+        {/* Action Buttons */}
         <div className="flex justify-between items-center mb-4">
           <button
             className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-            onClick={() => setShowModal(true)}
+            onClick={() => setShowCreateModal(true)}
           >
             + Create Party
+          </button>
+
+          <button
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            onClick={() => setShowUploadModal(true)}
+          >
+            Upload Excel
           </button>
         </div>
 
         {/* Party Table */}
-        <PartyList parties={parties} />
+        <PartyList parties={parties} /> {/* Or PartyTable if renamed */}
 
-        {/* Modal Form */}
-        {showModal && (
+        {/* Modals */}
+        {showCreateModal && (
           <CreatePartyModal
-            onClose={() => setShowModal(false)}
+            onClose={() => setShowCreateModal(false)}
             onAddParty={addParty}
           />
         )}
-        
 
-        {/* Banner */}
+        {showUploadModal && (
+          <UploadExcelModal
+            onClose={() => setShowUploadModal(false)}
+            onUpload={handleExcelUpload}
+          />
+        )}
+
+        {/* Bulk Upload Banner */}
         <BulkUploadBanner />
       </div>
     </div>
   );
 }
-
-export default App;
